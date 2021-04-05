@@ -39,6 +39,12 @@ namespace API
             services.AddApplicationServices(_config);
 
             services.AddControllers();
+
+            // .AddJsonOptions(opt =>
+            // {
+            //     opt.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+            // });
+
             services.AddCors();
 
             services.AddIdentityServices(_config);

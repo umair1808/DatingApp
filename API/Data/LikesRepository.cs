@@ -42,7 +42,7 @@ namespace API.Data
         **/
         public async Task<PagedList<LikeDto>> GetUserLikes(LikesParams likesParams)
         {
-            var users = _context.Users.OrderBy(u => u.Username).AsQueryable();
+            var users = _context.Users.OrderBy(u => u.UserName).AsQueryable();
             var likes = _context.Likes.AsQueryable();
 
             if(likesParams.Predicate == "liked"){
@@ -54,7 +54,7 @@ namespace API.Data
 
             var query = users.Select(u => new LikeDto {
                 Id = u.Id,
-                Username = u.Username,
+                Username = u.UserName,
                 Age = u.DateOfBirth.CalculateAge(),
                 KnownAs = u.KnownAs,
                 PhotoUrl = u.Photos.FirstOrDefault(p => p.IsMain).Url,

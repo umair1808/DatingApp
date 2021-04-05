@@ -33,7 +33,7 @@ namespace API.Data
         {
             return await _context.Users
             .Include(p => p.Photos)
-            .SingleOrDefaultAsync(x => x.Username == username);
+            .SingleOrDefaultAsync(x => x.UserName == username);
         }
 
         public async Task<AppUser> GetUserByIdAsync(int id)
@@ -63,7 +63,7 @@ namespace API.Data
             var minDob = DateTime.Today.AddYears(-userParams.MaxAge-1);
             var maxDob = DateTime.Today.AddYears(-userParams.MinAge);
 
-            var users = _context.Users.Where(u => u.Username.ToLower() != userParams.CurrentUsername.ToLower());
+            var users = _context.Users.Where(u => u.UserName.ToLower() != userParams.CurrentUsername.ToLower());
             users = users.Where(u => u.Gender == userParams.Gender);
             users = users.Where(u => u.DateOfBirth >= minDob && u.DateOfBirth <= maxDob);
 
@@ -80,7 +80,7 @@ namespace API.Data
         public async Task<MemberDto> GetMemberAsync(string username)
         {
             return await _context.Users
-            .Where(x => x.Username == username)
+            .Where(x => x.UserName == username)
             .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
             .SingleOrDefaultAsync();
         }

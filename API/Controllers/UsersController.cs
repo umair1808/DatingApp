@@ -29,13 +29,20 @@ namespace API.Controllers
             _userRepository = userRepository;
         }
 
+
+        /**
+        For roles based authorizaiton we can use the following technique
+        [Authorize(Roles = "Admin")]
+        */
+
         [HttpGet]
-    public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery] UserParams userParams)
+        public async Task<ActionResult<IEnumerable<MemberDto>>> GetUsers([FromQuery] UserParams userParams)
         {
             var user = await _userRepository.GetUserByUsernameAsync(User.GetUsername());
-            userParams.CurrentUsername = user.Username;
+            userParams.CurrentUsername = user.UserName;
 
-            if(string.IsNullOrEmpty(userParams.Gender)){
+            if (string.IsNullOrEmpty(userParams.Gender))
+            {
                 userParams.Gender = user.Gender == "male" ? "female" : "male";
             }
 
@@ -87,7 +94,7 @@ namespace API.Controllers
             user.Photos.Add(photo);
 
             if(await _userRepository.SaveAllAsync()) {
-                return CreatedAtRoute("GetUser", new{ username = user.Username }, _mapper.Map<PhotoDto>(photo));
+                return CreatedAtRoute("GetUser", new{ username = user.UserName }, _mapper.Map<PhotoDto>(photo));
             }
 
             return BadRequest("Problem adding photo");

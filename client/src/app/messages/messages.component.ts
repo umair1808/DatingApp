@@ -38,10 +38,14 @@ export class MessagesComponent implements OnInit {
     })
   }
 
-  pageChanged(event: any){
-    this.pageNumber = event.page;
-    console.log(this.pageNumber);
-    this.getMessages();
+  pageChanged(event: any) {
+    //bug in pagination libarary that sends multiple pageChanged calls on page change 
+    //resolved through following if statement
+    if (this.pageNumber !== event.page) {
+      this.pageNumber = event.page;
+      console.log(this.pageNumber);
+      this.getMessages();
+    }
   }
 
 }
