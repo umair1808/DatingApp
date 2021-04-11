@@ -22,6 +22,36 @@ namespace API.Data
             _context = context;
         }
 
+        public void AddGroup(Group group)
+        {
+            _context.Groups.Add(group);
+        }
+
+        public async Task<Connection> GetConnection(string connectionId)
+        {
+            return await _context.Connections.FindAsync(connectionId);
+        }
+
+        public void RemoveConnection(Connection connection)
+        {
+            _context.Connections.Remove(connection);
+        }
+
+        public async Task<Group> GetMessageGroup(string groupName)
+        {
+            return await _context.Groups
+            .Include(g => g.Connections)
+            .FirstOrDefaultAsync(g => g.Name == groupName);
+        }
+
+        public async Task<Group> GetGroupForConnection(string connectionId)
+        {
+            return await _context.Groups
+            .Include(g => g.Connections)
+            .Where(c => c.Connections.Any(x => x.ConnectionId == connectionId))
+            .FirstOrDefaultAsync();
+        }
+
         public void AddMessage(Message message)
         {
             _context.Messages.Add(message);
@@ -78,7 +108,7 @@ namespace API.Data
                 
             if(unreadMessages.Any()){
                 foreach(var message in unreadMessages){
-                    message.DateRead = DateTime.Now;
+                    message.DateRead = DateTime.UtcNow;
                 }
             }
 
@@ -91,5 +121,6 @@ namespace API.Data
         {
             return await _context.SaveChangesAsync() > 0;
         }
+
     }
 }
