@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 
 namespace API.DTOs
 {
@@ -9,10 +10,14 @@ namespace API.DTOs
         public string SenderUsername { get; set; }
         public string SenderPhotoUrl { get; set; }
         public int RecipientId { get; set; }
-        public string RecipentUsername { get; set; }
-        public string RecipentPhotoUrl { get; set; }
+        public string RecipientUsername { get; set; }
+        public string RecipientPhotoUrl { get; set; }
         public string Content { get; set; } 
         public DateTime? DateRead { get; set; }
         public DateTime MessageSent { get; set; }
+        [JsonIgnore]
+        public bool RecipientDeleted { get; set; }
+        [JsonIgnore]
+        public bool SenderDeleted { get; set; }
     }
 }

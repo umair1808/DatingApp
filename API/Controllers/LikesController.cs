@@ -13,28 +13,27 @@ namespace API.Controllers
     [Authorize]
     public class LikesController : BaseApiController
     {
-        private readonly IUserRepository _userRepository;
-        private readonly ILikesRepository _likesRepository;
-        public LikesController(IUserRepository userRepository, ILikesRepository likesRepository)
+        private readonly IUnitOfWork _unitOfWork;
+        public LikesController(IUnitOfWork unitOfWork)
         {
-            _likesRepository = likesRepository;
-            _userRepository = userRepository;
+            _unitOfWork = unitOfWork;
         }
 
         [HttpPost("{username}")] //username that is going to be liked by logged in user
-        public async Task<ActionResult> AddLike(string username){
-            
+        public async Task<ActionResult> AddLike(string username)
+        {
+
             var sourceUserId = User.GetUserId(); //ClaimsPrincipal extension
-            var sourceUser = await _likesRepository.GetUserWithLikes(sourceUserId); //return user with all of its likes included
-            var likedUser = await _userRepository.GetUserByUsernameAsync(username);
+            var sourceUser = await _unitOfWork.LikesRepository.GetUserWithLikes(sourceUserId); //return user with all of its likes included
+            var likedUser = await _unitOfWork.UserRepository.GetUserByUsernameAsync(username);
 
-            if(likedUser == null) return NotFound();
+            if (likedUser == null) return NotFound();
 
-            if(sourceUser.UserName == username) return BadRequest("You cannot like yourself");
+            if (sourceUser.UserName == username) return BadRequest("You cannot like yourself");
 
             //check to see if the user is already liked by logged in user
-            var userLike = await _likesRepository.GetUserLike(sourceUserId, likedUser.Id);
-            if(userLike != null) return BadRequest("You already like this user");
+            var userLike = await _unitOfWork.LikesRepository.GetUserLike(sourceUserId, likedUser.Id);
+            if (userLike != null) return BadRequest("You already like this user");
             //TODO: this functionality can be extented to unlke a user if it already liked
 
             userLike = new UserLike
@@ -45,17 +44,18 @@ namespace API.Controllers
 
             sourceUser.LikedUsers.Add(userLike);
 
-            if(await _userRepository.SaveAllAsync()) return Ok(); //TODO: _likeRepository should have its own save
+            if (await _unitOfWork.Complete()) return Ok();
 
             return BadRequest("Failed to like user");
 
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<LikeDto>>> GetUserLikes([FromQuery] LikesParams likesParams){
+        public async Task<ActionResult<IEnumerable<LikeDto>>> GetUserLikes([FromQuery] LikesParams likesParams)
+        {
 
             likesParams.UserId = User.GetUserId();
-            var users = await _likesRepository.GetUserLikes(likesParams);
+            var users = await _unitOfWork.LikesRepository.GetUserLikes(likesParams);
 
             //Adding the Pagination Information in the response to be used in the next request
             Response.AddPaginationHeader(users.CurrentPage, users.PageSize, users.TotalCount, users.TotalPages);
