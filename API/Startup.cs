@@ -41,12 +41,12 @@ namespace API
 
             services.AddControllers();
 
-            services.AddSignalR();
-
             // .AddJsonOptions(opt =>
             // {
             //     opt.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
             // });
+
+            services.AddSignalR();
 
             services.AddCors();
 

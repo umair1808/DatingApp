@@ -90,7 +90,7 @@ namespace API.Controllers
 
             if (user.Photos.Count == 0)
             {
-                photo.IsMain = true;
+                // photo.IsMain = true; //not setting frist photo as main photo before approval
             }
 
             user.Photos.Add(photo);
@@ -144,6 +144,7 @@ namespace API.Controllers
 
             return BadRequest("Failed to delte the photo");
         }
+
 
     }
 }

@@ -86,5 +86,6 @@ namespace API.Data
                     .Where(x => x.UserName == username)
                     .Select(x => x.Gender).FirstOrDefaultAsync();
         }
+    
     }
 }
