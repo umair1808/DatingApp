@@ -64,13 +64,11 @@ export class MembersDetailsComponent implements OnInit, OnDestroy {
   getImages(): NgxGalleryImage[] {
     const imageUrls = []
     for (const photo of this.member.photos) {
-      if (photo.isApproved) {
         imageUrls.push({
           small: photo?.url,
           medium: photo?.url,
           big: photo?.url
         })
-      }
     }
     return imageUrls
   }

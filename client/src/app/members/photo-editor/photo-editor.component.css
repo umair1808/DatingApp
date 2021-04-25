@@ -4,6 +4,23 @@ img.img-thumbnail {
     margin-bottom: 2px;
 }
 
+.image-overlay-disabled {
+    background-color: lightgray;
+    height: 100px;
+    min-width: 100px !important;
+    margin-bottom: 2px;
+    opacity: 0.6;
+    position: absolute;
+
+}
+
+.image-overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
 .nv-file-over{
     border: dotted 3px red;
 }

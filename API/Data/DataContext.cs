@@ -16,6 +16,9 @@ namespace API.Data
         public DataContext(DbContextOptions options) : base(options){}
 
         // public DbSet<AppUser> Users { get; set; } this will be provided by IdentityDbContext
+
+        public DbSet<Photo> Photos { get; set; }
+
         public DbSet<UserLike> Likes { get; set; }
         public DbSet<Message> Messages { get; set; }
 
@@ -25,6 +28,9 @@ namespace API.Data
         protected override void OnModelCreating(ModelBuilder builder){
 
             base.OnModelCreating(builder);
+
+            //Using query filters to filter out unapproved photos
+            builder.Entity<Photo>().HasQueryFilter(p => p.IsApproved == true);
 
             builder.Entity<AppUser>()
             .HasMany(ur => ur.UserRoles)

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.DTOs;
@@ -15,8 +16,10 @@ namespace API.Controllers
     {
         private readonly UserManager<AppUser> _userManager;
         private readonly IMapper _mapper;
+        private readonly IUnitOfWork _unitOfWork;
         public AdminController(UserManager<AppUser> userManager, IUnitOfWork unitOfWork, IMapper mapper)
         {
+            _unitOfWork = unitOfWork;
             _mapper = mapper;
             _userManager = userManager;
         }
@@ -70,26 +73,17 @@ namespace API.Controllers
         [HttpGet("photos-to-moderate")]
         public async Task<ActionResult> GetPhotosForModeration()
         {
-            var photos = await (from user in _userManager.Users
-                                from photo in user.Photos
-                                where photo.IsApproved == false
-                                select new { Id = photo.Id, Url = photo.Url }).ToListAsync();
+            var photos = await _unitOfWork.UserRepository.GetUnapprovedPhotos();
 
-            return Ok(photos);
+            return Ok(_mapper.Map<IEnumerable<PhotoDto>>(photos));
         }
 
         [Authorize(Policy = "ModeratePhotoRole")]
         [HttpPut("approve-photo/{id}")]
         public async Task<ActionResult> ApprovePhoto(int id)
         {
-            //TODO: This query here should be optimized. It gets null photo objects form database too
-            var photos = await _userManager.Users
-            .Select(u => u.Photos.Where(p => p.Id == id).FirstOrDefault())
-            .ToListAsync();
-
-            foreach (var photo in photos)
-            {
-                if (photo != null)
+            var photo = _unitOfWork.UserRepository.GetPhotoByIdAsync(id).Result;
+            if (photo != null)
                 {
                     photo.IsApproved = true;
 
@@ -98,11 +92,10 @@ namespace API.Controllers
 
                     //find out if this user has main photo set
                     var hasMainPhoto = user.Photos.Any(p => p.IsMain);
-                    if(!hasMainPhoto) photo.IsMain = true;
-                    
+                    if (!hasMainPhoto) photo.IsMain = true;
+
                     return Ok(_mapper.Map<PhotoDto>(photo));
                 }
-            }
 
             return NotFound();
         }

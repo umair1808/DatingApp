@@ -72,12 +72,17 @@ namespace API.Data
             return await PagedList<MemberDto>.CreateAsync(query, userParams.PageNumber, userParams.PageSize);
         }
 
-        public async Task<MemberDto> GetMemberAsync(string username)
+        public async Task<MemberDto> GetMemberAsync(string username, bool ignoreApprovedPhotosFilter = false)
         {
-            return await _context.Users
+            var query = _context.Users
             .Where(x => x.UserName == username)
-            .ProjectTo<MemberDto>(_mapper.ConfigurationProvider)
-            .SingleOrDefaultAsync();
+            .ProjectTo<MemberDto>(_mapper.ConfigurationProvider);
+
+            if(ignoreApprovedPhotosFilter)
+            {
+                 query = query.IgnoreQueryFilters();
+            }
+            return await query.SingleOrDefaultAsync();
         }
 
         public async Task<string> GetUserGender(string username)
@@ -86,6 +91,20 @@ namespace API.Data
                     .Where(x => x.UserName == username)
                     .Select(x => x.Gender).FirstOrDefaultAsync();
         }
-    
+
+        public async Task<Photo> GetPhotoByIdAsync(int id)
+        {
+            return await _context.Photos.Where(p => p.Id == id)
+            .IgnoreQueryFilters()
+            .SingleOrDefaultAsync();
+        }
+
+        public async Task<IEnumerable<Photo>> GetUnapprovedPhotos()
+        {
+            return await _context.Photos
+            .Where(p => p.IsApproved != true)
+            .IgnoreQueryFilters()
+            .ToListAsync();
+        }
     }
 }

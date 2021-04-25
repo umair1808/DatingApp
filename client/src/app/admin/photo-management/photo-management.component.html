@@ -1,14 +1,9 @@
 <div class="row">
-    <table class="table">
-        <tr>
-            <th style="width: 30%;">Id</th>
-            <th style="width: 40%;">Image</th>
-            <th style="width: 30%;"></th>
-        </tr>
-        <tr *ngFor="let photo of photos">
-            <td>{{photo.id}}</td>
-            <td><img src="{{photo.url}}" alt="{{photo.url}}" /></td>
-            <td><button (click)="approvePhoto(photo.id)" class="btn btn-info">Approve</button></td>
-        </tr>
-    </table>
+    <div class="col-3 text-center mb-3" *ngFor="let photo of photos">
+        <img src="{{photo.url}}" alt="{{photo.url}}" class="img-thumbnail p1" />
+        <div class="text-center">
+            <button (click)="approvePhoto(photo.id)" class="btn btn-success mr-1">Approve</button>
+            <!-- <button class="btn btn-danger">Reject</button> -->
+        </div>
+    </div>
 </div>
