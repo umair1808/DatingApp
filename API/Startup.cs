@@ -75,11 +75,16 @@ namespace API
 
             app.UseAuthentication().UseAuthorization();
 
+            app.UseDefaultFiles(); // to use defaut index.html files if it exists
+
+            app.UseStaticFiles(); // to use static java script and angular files
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
                 endpoints.MapHub<PresenceHub>("hubs/presence");
                 endpoints.MapHub<MessageHub>("hubs/message");
+                endpoints.MapFallbackToController("Index", "Fallback"); 
             });
         }
     }
