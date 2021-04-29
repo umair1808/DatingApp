@@ -26,7 +26,7 @@ namespace API.Extensions
                 // options.UseNpgsql(config.GetConnectionString("DefaultConnection"));
                 services.AddDbContext<DataContext>(options =>
                 {
-                    var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+                    var env = System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
                     string connStr;
 
